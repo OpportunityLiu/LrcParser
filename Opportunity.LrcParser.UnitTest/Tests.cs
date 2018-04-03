@@ -86,7 +86,7 @@ fripside
             {
                 Assert.IsNotNull(item.Content);
             }
-            Assert.AreEqual(5, l.MetaData.Count, $"Metadata {l.MetaData.ToString()}");
+            Assert.AreEqual(5, l.MetaData.Count, $"Metadata keys: {string.Join(", ", l.MetaData.Keys)}");
             Assert.AreEqual("eternal reality", l.MetaData.Title, "Wrong Title");
             Assert.AreEqual("fripside", l.MetaData.Artist, "Wrong Artist");
             Assert.AreEqual("eternal reality", l.MetaData.Album, "Wrong Album");
