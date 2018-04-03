@@ -8,6 +8,9 @@
     <Authors>Opportunity</Authors>
     <Description>An library for lrc files.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/OpportunityLiu/LrcParser</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/OpportunityLiu/LrcParser</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/OpportunityLiu/LrcParser/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
