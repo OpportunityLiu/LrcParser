@@ -3,7 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Opportunity.LrcParser", "Opportunity.LrcParser\Opportunity.LrcParser.csproj", "{0048D857-7104-4268-BF09-E18E6777DAA6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Opportunity.LrcParser.UnitTest", "Opportunity.LrcParser.UnitTest\Opportunity.LrcParser.UnitTest.csproj", "{4B6D6C57-568F-479D-A863-61390FB42230}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0048D857-7104-4268-BF09-E18E6777DAA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0048D857-7104-4268-BF09-E18E6777DAA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0048D857-7104-4268-BF09-E18E6777DAA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0048D857-7104-4268-BF09-E18E6777DAA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B6D6C57-568F-479D-A863-61390FB42230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B6D6C57-568F-479D-A863-61390FB42230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B6D6C57-568F-479D-A863-61390FB42230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B6D6C57-568F-479D-A863-61390FB42230}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
