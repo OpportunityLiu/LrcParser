@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Linq;
 
 namespace Opportunity.LrcParser.UnitTest
@@ -85,11 +86,12 @@ fripside
             {
                 Assert.IsNotNull(item.Content);
             }
-            Assert.AreEqual(5, l.MetaData.Count);
-            Assert.AreEqual("eternal reality", l.MetaData.Title);
-            Assert.AreEqual("fripside", l.MetaData.Artist);
-            Assert.AreEqual("eternal reality", l.MetaData.Album);
-            Assert.AreEqual("ShenzhiVÕ½¶·", l.MetaData.Creator);
+            Assert.AreEqual(5, l.MetaData.Count, $"Metadata {l.MetaData.ToString()}");
+            Assert.AreEqual("eternal reality", l.MetaData.Title, "Wrong Title");
+            Assert.AreEqual("fripside", l.MetaData.Artist, "Wrong Artist");
+            Assert.AreEqual("eternal reality", l.MetaData.Album, "Wrong Album");
+            Assert.AreEqual("ShenzhiVÕ½¶·", l.MetaData.Creator, "Wrong Creator");
+            Assert.AreEqual(new TimeSpan(11000), l.MetaData.Offset, "Wrong Offset");
         }
 
         [TestMethod]
