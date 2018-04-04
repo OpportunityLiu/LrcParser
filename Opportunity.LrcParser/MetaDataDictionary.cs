@@ -8,8 +8,10 @@ namespace Opportunity.LrcParser
     /// <summary>
     /// Dictionary of lrc metadata.
     /// </summary>
-    public class MetaDataDictionary : Dictionary<MetaDataType, object>
+    public sealed class MetaDataDictionary : Dictionary<MetaDataType, object>
     {
+        internal MetaDataDictionary() { }
+
         private object tryGet(MetaDataType key)
         {
             if (TryGetValue(key, out var r))

@@ -6,6 +6,7 @@ namespace Opportunity.LrcParser
 {
     /// <summary>
     /// Represents single line of lyrics.
+    /// Format: <c>"[mm:ss.ff]Lyrics"</c>
     /// </summary>
     [System.Diagnostics.DebuggerDisplay(@"{ToString(),nq}")]
     public class Line : IComparable<Line>, IComparable
@@ -23,7 +24,7 @@ namespace Opportunity.LrcParser
         public Line(DateTime timestamp, string content)
         {
             Timestamp = timestamp;
-            Content = content;
+            this.content = (content ?? "").Trim();
         }
 
         private static DateTime ONE_HOUR = new DateTime(1, 1, 1, 1, 0, 0);
@@ -42,30 +43,30 @@ namespace Opportunity.LrcParser
                 if (value.Kind != DateTimeKind.Unspecified)
                     throw new ArgumentException("Kind of value should be DateTimeKind.Unspecified");
                 if (value >= ONE_YEAR) //Auto correct.
-                    value = new DateTime(1, 1, 1, value.Hour, value.Minute, value.Second, value.Millisecond);
+                    value = new DateTime(value.TimeOfDay.Ticks);
                 this.InternalTimestamp = value;
             }
         }
 
         [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-        internal string InternalContent = "";
+        private string content = "";
         /// <summary>
         /// Lyrics of this line.
         /// </summary>
-        public string Content { get => this.InternalContent; set => this.InternalContent = (value ?? "").Trim(); }
+        public virtual string Content { get => this.content; set => this.content = (value ?? "").Trim(); }
 
         internal StringBuilder ToString(StringBuilder sb)
         {
             return sb.Append('[')
                 .Append(this.InternalTimestamp.ToLrcString())
                 .Append(']')
-                .AppendLine(this.InternalContent);
+                .Append(this.Content);
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            var sb = new StringBuilder(this.InternalContent.Length + 10);
+            var sb = new StringBuilder(this.content.Length + 10);
             ToString(sb);
             return sb.ToString();
         }
@@ -78,8 +79,78 @@ namespace Opportunity.LrcParser
             var ct = this.InternalTimestamp.CompareTo(other.InternalTimestamp);
             if (ct != 0)
                 return ct;
-            return this.InternalContent.CompareTo(other.InternalContent);
+            return string.Compare(this.Content, other.Content);
         }
         int IComparable.CompareTo(object obj) => CompareTo((Line)obj);
+    }
+
+    /// <summary>
+    /// Represents single line of lyrics with specified speaker.
+    /// Format: <c>"[mm:ss.ff]Spearker: Lyrics"</c>
+    /// </summary>
+    public class LineWithSpeaker : Line
+    {
+        /// <summary>
+        /// Create new instance of <see cref="Line"/>.
+        /// </summary>
+        public LineWithSpeaker() { }
+
+        /// <summary>
+        /// Create new instance of <see cref="Line"/>.
+        /// </summary>
+        /// <param name="timestamp">Timestamp of this line.</param>
+        /// <param name="speaker">Speaker of this line.</param>
+        /// <param name="lyrics">Lyrics of this line.</param>
+        public LineWithSpeaker(DateTime timestamp, string speaker, string lyrics)
+            : base(timestamp, null)
+        {
+            this.Speaker = speaker;
+            this.Lyrics = lyrics;
+        }
+
+        private string speaker = "";
+        /// <summary>
+        /// Speaker of this line.
+        /// </summary>
+        public string Speaker { get => this.speaker; set => this.speaker = (value ?? "").Trim(); }
+        /// <summary>
+        /// Lyrics of this line.
+        /// </summary>
+        public string Lyrics { get => base.Content; set => base.Content = value; }
+
+        /// <summary>
+        /// Lyrics with speaker of this line.
+        /// </summary>
+        public override string Content
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.speaker))
+                    return Lyrics;
+                if (string.IsNullOrEmpty(this.Lyrics))
+                    return Speaker + ":";
+                return Speaker + ": " + Lyrics;
+            }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    this.speaker = "";
+                    this.Lyrics = "";
+                    return;
+                }
+                var pi = value.IndexOf(':');
+                if (pi < 0)
+                {
+                    this.speaker = "";
+                    this.Lyrics = value;
+                }
+                else
+                {
+                    this.Speaker = value.Substring(0, pi);
+                    this.Lyrics = value.Substring(pi + 1);
+                }
+            }
+        }
     }
 }

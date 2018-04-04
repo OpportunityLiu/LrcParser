@@ -4,15 +4,13 @@ using System.Text;
 
 namespace Opportunity.LrcParser
 {
-    internal class Parser
+    internal class Parser<TLine> : ParserBase<TLine>
+        where TLine : Line, new()
     {
         private static readonly char[] lineBreaks = "\r\n\u0085\u2028\u2029".ToCharArray();
         private readonly string data;
 
         private int currentPosition = 0;
-
-        public readonly MetaDataDictionary MetaData = new MetaDataDictionary();
-        public readonly LineCollection Lines = new LineCollection();
 
         public Parser(string data)
         {
@@ -147,7 +145,7 @@ namespace Opportunity.LrcParser
                 else
                 {
                     if (DateTimeExtension.TryParseLrcString(this.data, tagStart, tagEnd, out var time))
-                        this.Lines.Add(new Line { InternalTimestamp = time });
+                        this.Lines.Add(new TLine { InternalTimestamp = time });
                 }
             }
             if (this.Lines.Count != lineStart)
@@ -165,7 +163,7 @@ namespace Opportunity.LrcParser
                 var content = this.data.Substring(this.currentPosition, end - this.currentPosition);
                 for (var i = lineStart; i < this.Lines.Count; i++)
                 {
-                    this.Lines[i].InternalContent = content;
+                    this.Lines[i].Content = content;
                 }
             }
             this.currentPosition = next;

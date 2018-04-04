@@ -8,12 +8,14 @@ namespace Opportunity.LrcParser
     /// <summary>
     /// Collection of <see cref="Line"/>.
     /// </summary>
-    public class LineCollection : List<Line>
+    /// <typeparam name="TLine">Type of lyrics line.</typeparam>
+    public sealed class LineCollection<TLine> : List<TLine>
+        where TLine : Line
     {
         internal LineCollection() : base(25) { }
 
         /// <summary>
-        /// Apply <paramref name="offset"/> to items in the <see cref="LineCollection"/>.
+        /// Apply <paramref name="offset"/> to items in the <see cref="LineCollection{TLine}"/>.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> out of range for some line.</exception>
         public void ApplyOffset(TimeSpan offset)
@@ -44,7 +46,7 @@ namespace Opportunity.LrcParser
         {
             foreach (var item in this)
             {
-                item.ToString(sb);
+                item.ToString(sb).AppendLine();
             }
             return sb;
         }

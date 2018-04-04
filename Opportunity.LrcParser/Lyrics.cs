@@ -5,33 +5,44 @@ using System.Text;
 namespace Opportunity.LrcParser
 {
     /// <summary>
-    /// Represents lrc file.
+    /// Factory class for <see cref="Lyrics{TLine}"/>.
     /// </summary>
-    [System.Diagnostics.DebuggerDisplay(@"MetaDataCount = {MetaData.Count} LineCount = {Lines.Count}")]
-    public class Lyrics
+    public static class Lyrics
     {
         /// <summary>
         /// Parse lrc file.
         /// </summary>
         /// <param name="content">Content of lrc file.</param>
         /// <returns>Result of parsing.</returns>
-        public static Lyrics Parse(string content)
+        /// <typeparam name="TLine">Type of lyrics line.</typeparam>
+        public static Lyrics<TLine> Parse<TLine>(string content)
+            where TLine : Line, new()
         {
-            return new Lyrics(new Parser(content));
+            var parser = new Parser<TLine>(content);
+            parser.Analyze();
+            return new Lyrics<TLine>(parser);
         }
+    }
 
+    /// <summary>
+    /// Represents lrc file.
+    /// </summary>
+    /// <typeparam name="TLine">Type of lyrics line.</typeparam>
+    [System.Diagnostics.DebuggerDisplay(@"MetaDataCount = {MetaData.Count} LineCount = {Lines.Count}")]
+    public class Lyrics<TLine>
+        where TLine : Line
+    {
         /// <summary>
         /// Create new instance of <see cref="Lyrics"/>.
         /// </summary>
         public Lyrics()
         {
-            this.Lines = new LineCollection();
+            this.Lines = new LineCollection<TLine>();
             this.MetaData = new MetaDataDictionary();
         }
 
-        internal Lyrics(Parser parser)
+        internal Lyrics(ParserBase<TLine> parser)
         {
-            parser.Analyze();
             this.Lines = parser.Lines;
             this.MetaData = parser.MetaData;
         }
@@ -66,7 +77,7 @@ namespace Opportunity.LrcParser
         /// <summary>
         /// Content of lyrics.
         /// </summary>
-        public LineCollection Lines { get; }
+        public LineCollection<TLine> Lines { get; }
 
         /// <summary>
         /// Metadata of lyrics.

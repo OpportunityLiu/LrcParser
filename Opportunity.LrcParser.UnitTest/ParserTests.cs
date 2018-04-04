@@ -5,7 +5,7 @@ using System.Linq;
 namespace Opportunity.LrcParser.UnitTest
 {
     [TestClass]
-    public class Tests
+    public class ParserTests
     {
         public const string TEST_DATA = @"
 asdfhf
@@ -80,7 +80,7 @@ fripside
         [TestMethod]
         public void TestAll()
         {
-            var l = Lyrics.Parse(TEST_DATA);
+            var l = Lyrics.Parse<Line>(TEST_DATA);
             Assert.AreEqual(53, l.Lines.Count);
             foreach (var item in l.Lines)
             {
@@ -99,14 +99,14 @@ fripside
         {
             for (var i = 0; i < 10000; i++)
             {
-                Lyrics.Parse(TEST_DATA);
+                Lyrics.Parse<Line>(TEST_DATA);
             }
         }
 
         [TestMethod]
         public void Stringify10000Times()
         {
-            var l = Lyrics.Parse(TEST_DATA);
+            var l = Lyrics.Parse<Line>(TEST_DATA);
             for (var i = 0; i < 10000; i++)
             {
                 l.ToString();
