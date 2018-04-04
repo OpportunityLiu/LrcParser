@@ -98,7 +98,8 @@ namespace Opportunity.LrcParser
             return false;
         }
 
-        private const long TICKS_PER_MINUTE = TICKS_PER_SECOND * 60;
-        private const long TICKS_PER_SECOND = 10000 * 1000;
+        public const long TICKS_PER_MINUTE = TICKS_PER_SECOND * 60;
+        public const long TICKS_PER_SECOND = TICKS_PER_MILLISECOND * 1000;
+        public const long TICKS_PER_MILLISECOND = 10_000;
     }
 }
