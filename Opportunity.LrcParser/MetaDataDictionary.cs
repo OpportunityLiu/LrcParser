@@ -113,12 +113,20 @@ namespace Opportunity.LrcParser
             set => setString(MetaDataType.Version, value);
         }
 
-        internal StringBuilder ToString(StringBuilder sb)
+        internal StringBuilder ToString(StringBuilder sb, LyricsFormat format)
         {
-            foreach (var item in this)
+            var datasource = this.AsEnumerable();
+            if (format.Flag(LyricsFormat.MetadataSortByContent))
+                datasource = datasource.OrderBy(d => d.Key.Stringify(d.Value));
+            if (format.Flag(LyricsFormat.LinesSortByTimestamp))
+                datasource = (datasource is IOrderedEnumerable<KeyValuePair<MetaDataType, object>> od)
+                    ? od.ThenBy(l => l.Key.Tag)
+                    : datasource.OrderBy(l => l.Key.Tag);
+            var skip = format.Flag(LyricsFormat.SkipEmptyMetadata);
+            foreach (var item in datasource)
             {
                 var v = item.Key.Stringify(item.Value);
-                if (string.IsNullOrEmpty(v))
+                if (skip && string.IsNullOrEmpty(v))
                     continue;
                 sb.Append('[')
                     .Append(item.Key.Tag)
@@ -134,7 +142,7 @@ namespace Opportunity.LrcParser
         public override string ToString()
         {
             var sb = new StringBuilder(this.Count * 10);
-            ToString(sb);
+            ToString(sb, LyricsFormat.Default);
             return sb.ToString();
         }
     }

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Opportunity.LrcParser
 {
+
     /// <summary>
     /// Factory class for <see cref="Lyrics{TLine}"/>.
     /// </summary>
@@ -65,14 +66,27 @@ namespace Opportunity.LrcParser
             }
         }
 
-        /// <inheritdoc/>
-        public override string ToString()
+        /// <summary>
+        /// Serialize the lrc file.
+        /// </summary>
+        /// <param name="format">Format settings for serialization.</param>
+        /// <returns>Lrc file data.</returns>
+        public string ToString(LyricsFormat format)
         {
             var sb = new StringBuilder(this.MetaData.Count * 10 + this.Lines.Count * 20);
-            MetaData.ToString(sb);
-            Lines.ToString(sb);
+            if (format.Flag(LyricsFormat.NewLineAtBeginOfFile))
+                sb.AppendLine();
+            MetaData.ToString(sb, format);
+            if (format.Flag(LyricsFormat.NewLineAtEndOfMetadata))
+                sb.AppendLine();
+            Lines.ToString(sb, format);
+            if (!format.Flag(LyricsFormat.NewLineAtEndOfFile))
+                sb.Remove(sb.Length - Environment.NewLine.Length, Environment.NewLine.Length);
             return sb.ToString();
         }
+
+        /// <inheritdoc/>
+        public override string ToString() => ToString(LyricsFormat.Default);
 
         /// <summary>
         /// Content of lyrics.

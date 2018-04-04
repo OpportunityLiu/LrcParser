@@ -63,6 +63,13 @@ namespace Opportunity.LrcParser
                 .Append(this.Content);
         }
 
+        internal StringBuilder TimestampToString(StringBuilder sb)
+        {
+            return sb.Append('[')
+                .Append(this.InternalTimestamp.ToLrcString())
+                .Append(']');
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -90,6 +97,8 @@ namespace Opportunity.LrcParser
     /// </summary>
     public class LineWithSpeaker : Line
     {
+        private static readonly char[] invalidSpeakerChars = ":".ToCharArray();
+
         /// <summary>
         /// Create new instance of <see cref="Line"/>.
         /// </summary>
@@ -108,11 +117,21 @@ namespace Opportunity.LrcParser
             this.Lyrics = lyrics;
         }
 
+        [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
         private string speaker = "";
         /// <summary>
         /// Speaker of this line.
         /// </summary>
-        public string Speaker { get => this.speaker; set => this.speaker = (value ?? "").Trim(); }
+        public string Speaker
+        {
+            get => this.speaker;
+            set
+            {
+                value = value ?? "";
+                Helper.CheckString(nameof(value), value, invalidSpeakerChars);
+                this.speaker = value.Trim();
+            }
+        }
         /// <summary>
         /// Lyrics of this line.
         /// </summary>

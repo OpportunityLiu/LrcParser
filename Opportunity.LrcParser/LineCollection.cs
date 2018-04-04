@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 
 namespace Opportunity.LrcParser
@@ -42,11 +43,32 @@ namespace Opportunity.LrcParser
             }
         }
 
-        internal StringBuilder ToString(StringBuilder sb)
+        internal StringBuilder ToString(StringBuilder sb, LyricsFormat format)
         {
-            foreach (var item in this)
+            var datasource = this.AsEnumerable();
+            if (format.Flag(LyricsFormat.LinesSortByContent))
+                datasource = datasource.OrderBy(l => l.Content);
+            if (format.Flag(LyricsFormat.LinesSortByTimestamp))
+                datasource = (datasource is IOrderedEnumerable<TLine> od)
+                    ? od.ThenBy(l => l.InternalTimestamp)
+                    : datasource.OrderBy(l => l.InternalTimestamp);
+            if (format.Flag(LyricsFormat.MergeTimestamp))
             {
-                item.ToString(sb).AppendLine();
+                foreach (var item in datasource.GroupBy(l => l.Content))
+                {
+                    foreach (var line in item)
+                    {
+                        line.TimestampToString(sb);
+                    }
+                    sb.AppendLine(item.Key);
+                }
+            }
+            else
+            {
+                foreach (var item in datasource)
+                {
+                    item.ToString(sb).AppendLine();
+                }
             }
             return sb;
         }
@@ -55,7 +77,7 @@ namespace Opportunity.LrcParser
         public override string ToString()
         {
             var sb = new StringBuilder(this.Count * 20);
-            ToString(sb);
+            ToString(sb, LyricsFormat.Default);
             return sb.ToString();
         }
     }
