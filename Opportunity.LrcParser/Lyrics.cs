@@ -23,6 +23,20 @@ namespace Opportunity.LrcParser
             parser.Analyze();
             return new Lyrics<TLine>(parser);
         }
+
+        /// <summary>
+        /// Parse lrc file.
+        /// </summary>
+        /// <param name="content">Content of lrc file.</param>
+        /// <returns>Result of parsing.</returns>
+        public static Lyrics<Line> Parse(string content) => Parse<Line>(content);
+
+        /// <summary>
+        /// Parse lrc file.
+        /// </summary>
+        /// <param name="content">Content of lrc file.</param>
+        /// <returns>Result of parsing.</returns>
+        public static Lyrics<LineWithSpeaker> ParseWithSpeaker(string content) => Parse<LineWithSpeaker>(content);
     }
 
     /// <summary>
