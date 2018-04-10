@@ -5,10 +5,10 @@ An library for lrc files.
 
 ## Quick Start
 
-### Parse A `LRC` File
+### Parse An `LRC` File
 
-To parse `lrc` file, use `Lyrics.Parse(string)` method, overloads can be used for variants of `lrc` formats.
+To parse `lrc` files, use `Lyrics.Parse(string)` method, overloads can be used for variants of `lrc` formats.
 
 ### Stringify A `Lyrics` Instance
 
-To create `lrc` file with `Lyrics<TLine>` instance, call its `ToString()` method, you can also use `ToString(LyricsFormat)` overload to specify format settings.
+To create `lrc` file with a `Lyrics<TLine>` instance, call its `ToString()` method, you can also use `ToString(LyricsFormat)` overload to specify format settings.
