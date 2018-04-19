@@ -27,25 +27,16 @@ namespace Opportunity.LrcParser
             this.content = (content ?? "").Trim();
         }
 
-        private static DateTime ONE_HOUR = new DateTime(1, 1, 1, 1, 0, 0);
-        private static DateTime ONE_YEAR = new DateTime(2, 1, 1, 0, 0, 0);
-
         [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
         internal DateTime InternalTimestamp;
         /// <summary>
         /// Timestamp of this line of lyrics.
         /// </summary>
+        /// <exception cref="ArgumentException"><see cref="DateTime.Kind"/> of value is not <see cref="DateTimeKind.Unspecified"/>.</exception>
         public DateTime Timestamp
         {
             get => this.InternalTimestamp;
-            set
-            {
-                if (value.Kind != DateTimeKind.Unspecified)
-                    throw new ArgumentException("Kind of value should be DateTimeKind.Unspecified");
-                if (value >= ONE_YEAR) //Auto correct.
-                    value = new DateTime(value.TimeOfDay.Ticks);
-                this.InternalTimestamp = value;
-            }
+            set => this.InternalTimestamp = value.ToTimestamp();
         }
 
         [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]

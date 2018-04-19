@@ -9,14 +9,14 @@ namespace Opportunity.LrcParser.UnitTest
     {
         public const string TEST_DATA = @"
 asdfhf
-[ ti :  eternal reality  ]aSAS
+[ ti :eternal reality]aSAS
 ASF[
-ar :  
-fripside   
-   ]  SAF
+ar :fripside]
+SAF
 [al:eternal reality]
-[by:ShenzhiV战斗]
+[by  :ShenzhiV战斗]
 [offset: +1.1]
+[length: 12estg:44]
 [12234:02.16]  [00:02.16]             
   輝く希望が この街を駆け抜けるから
 〖闪耀的希望 在这座城市之中游走奔驰〗
@@ -86,12 +86,13 @@ fripside
             {
                 Assert.IsNotNull(item.Content);
             }
-            Assert.AreEqual(5, l.MetaData.Count, $"Metadata keys: {string.Join(", ", l.MetaData.Keys)}");
+            Assert.AreEqual(6, l.MetaData.Count, $"Metadata keys: {string.Join(", ", l.MetaData.Keys)}");
             Assert.AreEqual("eternal reality", l.MetaData.Title, "Wrong Title");
             Assert.AreEqual("fripside", l.MetaData.Artist, "Wrong Artist");
             Assert.AreEqual("eternal reality", l.MetaData.Album, "Wrong Album");
             Assert.AreEqual("ShenzhiV战斗", l.MetaData.Creator, "Wrong Creator");
             Assert.AreEqual(new TimeSpan(11000), l.MetaData.Offset, "Wrong Offset");
+            Assert.AreEqual(Timestamp.Create(12, 44, 0), l.MetaData.Length, "Wrong Length");
         }
 
         [TestMethod]

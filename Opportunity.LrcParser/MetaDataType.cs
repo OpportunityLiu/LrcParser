@@ -61,12 +61,18 @@ namespace Opportunity.LrcParser
         /// </summary>
         /// <param name="mataDataContent">Metadata content of <see cref="DataType"/>.</param>
         /// <returns>String representation of <paramref name="mataDataContent"/>.</returns>
-        protected internal virtual string Stringify(object mataDataContent) => (mataDataContent ?? "").ToString().Trim();
+        protected internal virtual string Stringify(object mataDataContent)
+            => mataDataContent?.ToString();
 
         /// <summary>
         /// Data type of metadata.
         /// </summary>
         public Type DataType { get; }
+
+        /// <summary>
+        /// Default value of metadata.
+        /// </summary>
+        public virtual object Default => Activator.CreateInstance(DataType);
 
         /// <summary>
         /// Create new instance of <see cref="MetaDataType"/>, if <paramref name="tag"/> is known, value from <see cref="PreDefined"/> will be returned.
@@ -95,7 +101,22 @@ namespace Opportunity.LrcParser
         /// If instance from <see cref="PreDefined"/> is returned, <paramref name="parser"/> will be ignored.
         /// </remarks>
         public static MetaDataType Create<T>(string tag, Func<string, T> parser)
-            => Create(tag, parser, null);
+            => Create(tag, parser, null, default);
+
+        /// <summary>
+        /// Create new instance of <see cref="MetaDataType"/>, if <paramref name="tag"/> is known, value from <see cref="PreDefined"/> will be returned.
+        /// </summary>
+        /// <param name="tag">Tag of metadata.</param>
+        /// <param name="parser">Parser for <see cref="Parse(string)"/> method.</param>
+        /// <param name="defaultValue">Default value of metadata.</param>
+        /// <returns>New instance of <see cref="MetaDataType"/>, or instance from <see cref="PreDefined"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="tag"/> or <paramref name="parser"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="tag"/> contains invalid character.</exception>
+        /// <remarks>
+        /// If instance from <see cref="PreDefined"/> is returned, <paramref name="parser"/> will be ignored.
+        /// </remarks>
+        public static MetaDataType Create<T>(string tag, Func<string, T> parser, T defaultValue)
+            => Create(tag, parser, null, defaultValue);
 
         /// <summary>
         /// Create new instance of <see cref="MetaDataType"/>, if <paramref name="tag"/> is known, value from <see cref="PreDefined"/> will be returned.
@@ -110,13 +131,29 @@ namespace Opportunity.LrcParser
         /// If instance from <see cref="PreDefined"/> is returned, <paramref name="parser"/> and <paramref name="stringifier"/> will be ignored.
         /// </remarks>
         public static MetaDataType Create<T>(string tag, Func<string, T> parser, Func<T, string> stringifier)
+            => Create(tag, parser, stringifier, default);
+
+        /// <summary>
+        /// Create new instance of <see cref="MetaDataType"/>, if <paramref name="tag"/> is known, value from <see cref="PreDefined"/> will be returned.
+        /// </summary>
+        /// <param name="tag">Tag of metadata.</param>
+        /// <param name="parser">Parser for <see cref="Parse(string)"/> method.</param>
+        /// <param name="stringifier">Stringifier for <see cref="Stringify(object)"/> method.</param>
+        /// <param name="defaultValue">Default value of metadata.</param>
+        /// <returns>New instance of <see cref="MetaDataType"/>, or instance from <see cref="PreDefined"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="tag"/> or <paramref name="parser"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="tag"/> contains invalid character.</exception>
+        /// <remarks>
+        /// If instance from <see cref="PreDefined"/> is returned, <paramref name="parser"/> and <paramref name="stringifier"/> will be ignored.
+        /// </remarks>
+        public static MetaDataType Create<T>(string tag, Func<string, T> parser, Func<T, string> stringifier, T defaultValue)
         {
             if (parser is null)
                 throw new ArgumentNullException(nameof(parser));
             tag = checkTag(tag);
             if (PreDefined.TryGetValue(tag, out var r))
                 return r;
-            return new DelegateMetaDataType<T>(tag, parser, stringifier);
+            return new DelegateMetaDataType<T>(tag, parser, stringifier, defaultValue);
         }
 
         /// <inheritdoc/>
@@ -133,27 +170,36 @@ namespace Opportunity.LrcParser
             public NoValidateMetaDataType(string tag)
                 : base(tag, typeof(string), true) { }
 
-            protected internal override object Parse(string mataDataContent) => (mataDataContent ?? "").Trim();
+            protected internal override object Parse(string mataDataContent) => mataDataContent;
+
+            public override object Default => "";
         }
 
         private sealed class DelegateMetaDataType<T> : MetaDataType
         {
-            public DelegateMetaDataType(string tag, Func<string, T> parser, Func<T, string> stringifier)
+            public DelegateMetaDataType(string tag, Func<string, T> parser, Func<T, string> stringifier, T def)
                 : base(tag, typeof(T), true)
             {
                 this.parser = parser;
                 this.stringifier = stringifier;
+                this.def = def;
             }
 
             private readonly Func<string, T> parser;
             private readonly Func<T, string> stringifier;
+            private readonly T def;
 
-            protected internal override object Parse(string mataDataContent) => this.parser((mataDataContent ?? "").Trim());
+            public override object Default => this.def;
+
+            protected internal override object Parse(string mataDataContent)
+            {
+                return this.parser(mataDataContent);
+            }
 
             protected internal override string Stringify(object mataDataContent)
             {
                 if (mataDataContent is T data && this.stringifier is Func<T, string> func)
-                    return base.Stringify(func(data));
+                    return func(data);
                 return base.Stringify(mataDataContent);
             }
         }
@@ -170,9 +216,15 @@ namespace Opportunity.LrcParser
                 ["ti"] = new NoValidateMetaDataType("ti"),
                 ["au"] = new NoValidateMetaDataType("au"),
                 ["by"] = new NoValidateMetaDataType("by"),
-                ["offset"] = new DelegateMetaDataType<TimeSpan>("offset", v => TimeSpan.FromTicks((long)(double.Parse(v, System.Globalization.NumberStyles.Any) * 10000)), ts => ts.TotalMilliseconds.ToString("+0.#;-0.#")),
+                ["offset"] = new DelegateMetaDataType<TimeSpan>("offset", v => TimeSpan.FromTicks((long)(double.Parse(v, System.Globalization.NumberStyles.Any) * 10000)), ts => ts.TotalMilliseconds.ToString("+0.#;-0.#"), default),
                 ["re"] = new NoValidateMetaDataType("re"),
                 ["ve"] = new NoValidateMetaDataType("ve"),
+                ["length"] = new DelegateMetaDataType<DateTime>("length", v =>
+                {
+                    if (DateTimeExtension.TryParseLrcString(v, 0, v.Length, out var r))
+                        return r;
+                    throw new ArgumentException("Invalid length string.");
+                }, d => d.ToTimestamp().ToLrcStringShort(), default),
             });
 
         /// <summary>
@@ -207,6 +259,10 @@ namespace Opportunity.LrcParser
         /// Version of program, "ve" field of ID Tags.
         /// </summary>
         public static MetaDataType Version => PreDefined["ve"];
+        /// <summary>
+        /// Length of song, "length" field of ID Tags.
+        /// </summary>
+        public static MetaDataType Length => PreDefined["length"];
         #endregion Pre-defined
     }
 }

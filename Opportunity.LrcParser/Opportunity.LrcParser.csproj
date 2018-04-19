@@ -11,7 +11,11 @@
     <PackageProjectUrl>https://github.com/OpportunityLiu/LrcParser</PackageProjectUrl>
     <RepositoryUrl>https://github.com/OpportunityLiu/LrcParser</RepositoryUrl>
     <PackageLicenseUrl>https://github.com/OpportunityLiu/LrcParser/blob/master/LICENSE</PackageLicenseUrl>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
+    <PackageReleaseNotes>* Add new pre-defined ID tag `length`
+* `MataDataDictionary` now inherits from `Dictionary&lt;MetaDataType, string&gt;`</PackageReleaseNotes>
+    <PackageTags>lrc; lyrics; parser;</PackageTags>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

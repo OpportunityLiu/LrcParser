@@ -8,31 +8,33 @@ namespace Opportunity.LrcParser
     /// <summary>
     /// Dictionary of lrc metadata.
     /// </summary>
-    public sealed class MetaDataDictionary : Dictionary<MetaDataType, object>
+    public sealed class MetaDataDictionary : Dictionary<MetaDataType, string>
     {
         internal MetaDataDictionary() { }
 
         private object tryGet(MetaDataType key)
         {
-            if (TryGetValue(key, out var r))
-                return r;
-            return null;
+            try
+            {
+                if (TryGetValue(key, out var r) && r != null)
+                    return key.Parse(r);
+            }
+            catch { }
+            return key.Default;
         }
 
-        private static string prettify(string value)
+        private void set(MetaDataType key, object value)
         {
-            if (string.IsNullOrWhiteSpace(value))
-                return null;
-            return value.Trim();
-        }
-
-        private void setString(MetaDataType key, string value)
-        {
-            value = prettify(value);
-            if (value == default)
+            if (value is null || Equals(value, key.Default))
+            {
+                this.Remove(key);
+                return;
+            }
+            var str = key.Stringify(value);
+            if (str is null)
                 this.Remove(key);
             else
-                this[key] = value;
+                this[key] = str;
         }
 
         /// <summary>
@@ -40,8 +42,8 @@ namespace Opportunity.LrcParser
         /// </summary>
         public string Artist
         {
-            get => tryGet(MetaDataType.Artist) is string s ? s : "";
-            set => setString(MetaDataType.Artist, value);
+            get => (string)tryGet(MetaDataType.Artist);
+            set => set(MetaDataType.Artist, value);
         }
 
         /// <summary>
@@ -49,8 +51,8 @@ namespace Opportunity.LrcParser
         /// </summary>
         public string Album
         {
-            get => tryGet(MetaDataType.Album) is string s ? s : "";
-            set => setString(MetaDataType.Album, value);
+            get => (string)tryGet(MetaDataType.Album);
+            set => set(MetaDataType.Album, value);
         }
 
         /// <summary>
@@ -58,8 +60,8 @@ namespace Opportunity.LrcParser
         /// </summary>
         public string Title
         {
-            get => tryGet(MetaDataType.Title) is string s ? s : "";
-            set => setString(MetaDataType.Title, value);
+            get => (string)tryGet(MetaDataType.Title);
+            set => set(MetaDataType.Title, value);
         }
 
         /// <summary>
@@ -67,8 +69,8 @@ namespace Opportunity.LrcParser
         /// </summary>
         public string Author
         {
-            get => tryGet(MetaDataType.Author) is string s ? s : "";
-            set => setString(MetaDataType.Author, value);
+            get => (string)tryGet(MetaDataType.Author);
+            set => set(MetaDataType.Author, value);
         }
 
         /// <summary>
@@ -76,8 +78,8 @@ namespace Opportunity.LrcParser
         /// </summary>
         public string Creator
         {
-            get => tryGet(MetaDataType.Creator) is string s ? s : "";
-            set => setString(MetaDataType.Creator, value);
+            get => (string)tryGet(MetaDataType.Creator);
+            set => set(MetaDataType.Creator, value);
         }
 
         /// <summary>
@@ -85,14 +87,8 @@ namespace Opportunity.LrcParser
         /// </summary>
         public TimeSpan Offset
         {
-            get => tryGet(MetaDataType.Offset) is TimeSpan s ? s : default;
-            set
-            {
-                if (value == default)
-                    this.Remove(MetaDataType.Offset);
-                else
-                    this[MetaDataType.Offset] = value;
-            }
+            get => (TimeSpan)tryGet(MetaDataType.Offset);
+            set => set(MetaDataType.Offset, value);
         }
 
         /// <summary>
@@ -100,8 +96,8 @@ namespace Opportunity.LrcParser
         /// </summary>
         public string Editor
         {
-            get => tryGet(MetaDataType.Editor) is string s ? s : "";
-            set => setString(MetaDataType.Editor, value);
+            get => (string)tryGet(MetaDataType.Editor);
+            set => set(MetaDataType.Editor, value);
         }
 
         /// <summary>
@@ -109,8 +105,17 @@ namespace Opportunity.LrcParser
         /// </summary>
         public string Version
         {
-            get => tryGet(MetaDataType.Version) is string s ? s : "";
-            set => setString(MetaDataType.Version, value);
+            get => (string)tryGet(MetaDataType.Version);
+            set => set(MetaDataType.Version, value);
+        }
+
+        /// <summary>
+        /// Length of song, "length" field of ID Tags.
+        /// </summary>
+        public DateTime Length
+        {
+            get => (DateTime)tryGet(MetaDataType.Length);
+            set => set(MetaDataType.Length, value);
         }
 
         internal StringBuilder ToString(StringBuilder sb, LyricsFormat format)
@@ -119,13 +124,13 @@ namespace Opportunity.LrcParser
             if (format.Flag(LyricsFormat.MetadataSortByContent))
                 datasource = datasource.OrderBy(d => d.Key.Stringify(d.Value));
             if (format.Flag(LyricsFormat.LinesSortByTimestamp))
-                datasource = (datasource is IOrderedEnumerable<KeyValuePair<MetaDataType, object>> od)
+                datasource = (datasource is IOrderedEnumerable<KeyValuePair<MetaDataType, string>> od)
                     ? od.ThenBy(l => l.Key.Tag)
                     : datasource.OrderBy(l => l.Key.Tag);
             var skip = format.Flag(LyricsFormat.SkipEmptyMetadata);
             foreach (var item in datasource)
             {
-                var v = item.Key.Stringify(item.Value);
+                var v = item.Value;
                 if (skip && string.IsNullOrEmpty(v))
                     continue;
                 sb.Append('[')

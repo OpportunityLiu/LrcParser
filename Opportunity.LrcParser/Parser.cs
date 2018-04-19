@@ -130,17 +130,20 @@ namespace Opportunity.LrcParser
                 if (!char.IsDigit(this.data[tagStart]))
                 {
                     var colum = this.data.IndexOf(':', tagStart, tagEnd - tagStart);
+                    var mdt = colum < 0
+                        ? MetaDataType.Create(this.data.Substring(tagStart, tagEnd - tagStart))
+                        : MetaDataType.Create(this.data.Substring(tagStart, colum - tagStart));
+                    var mdc = colum < 0
+                        ? ""
+                        : this.data.Substring(colum + 1, tagEnd - colum - 1);
                     try
                     {
-                        var mdt = colum < 0
-                            ? MetaDataType.Create(this.data.Substring(tagStart, tagEnd - tagStart))
-                            : MetaDataType.Create(this.data.Substring(tagStart, colum - tagStart));
-                        var mdc = colum < 0
-                            ? ""
-                            : this.data.Substring(colum + 1, tagEnd - colum - 1);
-                        this.MetaData[mdt] = mdt.Parse(mdc);
+                        this.MetaData[mdt] = mdt.Stringify(mdt.Parse(mdc));
                     }
-                    catch { }
+                    catch
+                    {
+                        this.MetaData[mdt] = mdc;
+                    }
                 }
                 else
                 {
