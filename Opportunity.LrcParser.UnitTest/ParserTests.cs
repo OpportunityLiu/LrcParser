@@ -92,7 +92,7 @@ SAF
             Assert.AreEqual("eternal reality", l.MetaData.Album, "Wrong Album");
             Assert.AreEqual("ShenzhiV战斗", l.MetaData.Creator, "Wrong Creator");
             Assert.AreEqual(new TimeSpan(11000), l.MetaData.Offset, "Wrong Offset");
-            Assert.AreEqual(Timestamp.Create(12, 44, 0), l.MetaData.Length, "Wrong Length");
+            Assert.AreEqual(" 12estg:44", l.MetaData[MetaDataType.Length], "Wrong Length");
         }
 
         [TestMethod]
