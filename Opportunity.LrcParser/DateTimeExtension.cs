@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Opportunity.LrcParser
 {
     internal static class DateTimeExtension
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string ToString(this DateTime dateTime, string mFormat, string smSep, string sFormat)
         {
             var t = dateTime.Ticks;
@@ -16,13 +18,7 @@ namespace Opportunity.LrcParser
         }
 
         public static string ToLrcString(this DateTime dateTime, int minDecimalDigits, int maxDecimalDigits)
-        {
-            var t = dateTime.Ticks;
-            var m = t / TICKS_PER_MINUTE;
-            t -= m * TICKS_PER_MINUTE;
-            var s = (double)t / TICKS_PER_SECOND;
-            return m.ToString("D2") + ":" + s.ToString("00." + new string('0', minDecimalDigits) + new string('#', maxDecimalDigits - minDecimalDigits));
-        }
+            => dateTime.ToString("D2", ":", "00." + new string('0', minDecimalDigits) + new string('#', maxDecimalDigits - minDecimalDigits));
 
         public static string ToLrcString(this DateTime dateTime)
             => dateTime.ToString("D2", ":", "00.00");

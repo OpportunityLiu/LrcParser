@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Opportunity.LrcParser
 {
@@ -58,6 +59,7 @@ namespace Opportunity.LrcParser
 
     internal static class LyricsFormatExtension
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Flag(this LyricsFormat value, LyricsFormat flag)
         {
             return (value & flag) == flag;
