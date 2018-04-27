@@ -7,7 +7,12 @@ namespace Opportunity.LrcParser.UnitTest
     {
         public const string TEST_DATA = @"
 [00:17.95][01:25.92][02:06.91][02:35.21][03:01.53][03:15.06][03:30.71]
-[00:02.58]全員: いっせーの！
+
+
+[00:02.58]全員: いっ]せーの！
+
+
+
 [00:03.65]千和: おかえり　(YEAH!)
 [00:04.93]真涼: さあ出かけよう　(YEAH!)
 [00:06.59]全員: 抜け駆けランデブー
@@ -82,8 +87,12 @@ namespace Opportunity.LrcParser.UnitTest
         [TestMethod]
         public void TestAll()
         {
-            var l = Lyrics.Parse<LineWithSpeaker>(TEST_DATA);
+            var r = Lyrics.Parse<LineWithSpeaker>(TEST_DATA);
+            var l = r.Lyrics;
             Assert.AreEqual(74, l.Lines.Count);
+            Assert.AreEqual("", l.Lines[6].Content);
+            Assert.AreEqual("全員: いっ]せーの！", l.Lines[7].Content);
+            Assert.AreEqual(Timestamp.Create(2, 580), l.Lines[7].Timestamp);
             foreach (var item in l.Lines)
             {
                 Assert.IsNotNull(item.Lyrics);
@@ -114,7 +123,7 @@ namespace Opportunity.LrcParser.UnitTest
         [TestMethod]
         public void Stringify10000Times()
         {
-            var l = Lyrics.Parse<LineWithSpeaker>(TEST_DATA);
+            var l = Lyrics.Parse<LineWithSpeaker>(TEST_DATA).Lyrics;
             for (var i = 0; i < 10000; i++)
             {
                 l.ToString();

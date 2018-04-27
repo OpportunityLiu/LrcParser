@@ -11,21 +11,22 @@
     <PackageProjectUrl>https://github.com/OpportunityLiu/LrcParser</PackageProjectUrl>
     <RepositoryUrl>https://github.com/OpportunityLiu/LrcParser</RepositoryUrl>
     <PackageLicenseUrl>https://github.com/OpportunityLiu/LrcParser/blob/master/LICENSE</PackageLicenseUrl>
-    <Version>1.0.3</Version>
-    <PackageReleaseNotes>* Add new pre-defined ID tag `length`
-* `MataDataDictionary` now inherits from `Dictionary&lt;MetaDataType, string&gt;`</PackageReleaseNotes>
+    <Version>1.0.4</Version>
+    <PackageReleaseNotes>* Fix bug</PackageReleaseNotes>
     <PackageTags>lrc; lyrics; parser;</PackageTags>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard1.4\Opportunity.LrcParser.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard1.0\Opportunity.LrcParser.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard1.4\Opportunity.LrcParser.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard1.0\Opportunity.LrcParser.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
 </Project>

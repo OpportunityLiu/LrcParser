@@ -16,12 +16,12 @@ namespace Opportunity.LrcParser
         /// <param name="content">Content of lrc file.</param>
         /// <returns>Result of parsing.</returns>
         /// <typeparam name="TLine">Type of lyrics line.</typeparam>
-        public static Lyrics<TLine> Parse<TLine>(string content)
+        public static IParseResult<TLine> Parse<TLine>(string content)
             where TLine : Line, new()
         {
             var parser = new Parser<TLine>(content);
             parser.Analyze();
-            return new Lyrics<TLine>(parser);
+            return parser;
         }
 
         /// <summary>
@@ -29,14 +29,14 @@ namespace Opportunity.LrcParser
         /// </summary>
         /// <param name="content">Content of lrc file.</param>
         /// <returns>Result of parsing.</returns>
-        public static Lyrics<Line> Parse(string content) => Parse<Line>(content);
+        public static IParseResult<Line> Parse(string content) => Parse<Line>(content);
 
         /// <summary>
         /// Parse lrc file.
         /// </summary>
         /// <param name="content">Content of lrc file.</param>
         /// <returns>Result of parsing.</returns>
-        public static Lyrics<LineWithSpeaker> ParseWithSpeaker(string content) => Parse<LineWithSpeaker>(content);
+        public static IParseResult<LineWithSpeaker> ParseWithSpeaker(string content) => Parse<LineWithSpeaker>(content);
     }
 
     /// <summary>

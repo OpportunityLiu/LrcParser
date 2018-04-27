@@ -25,7 +25,7 @@ SAF
 [00:15.20]心のまま 信じる明日を探し続けてる
 〖随着本心 继续寻找著所坚信的明天〗
 
-[00:00.00][00:21.96]
+[00:00.00][00:21.96][a]
 [00:23.54]立ち尽くす 雑踏のなか 远ざかる君を見つめてた
 〖伫立於熙熙攘攘的人群 目睹着你的背影渐行渐远〗
 [00:30.19]分かち合う その大切さ 今は理解っているから
@@ -80,7 +80,8 @@ SAF
         [TestMethod]
         public void TestAll()
         {
-            var l = Lyrics.Parse<Line>(TEST_DATA);
+            var r = Lyrics.Parse<Line>(TEST_DATA);
+            var l = r.Lyrics;
             Assert.AreEqual(53, l.Lines.Count);
             foreach (var item in l.Lines)
             {
@@ -93,6 +94,9 @@ SAF
             Assert.AreEqual("ShenzhiV战斗", l.MetaData.Creator, "Wrong Creator");
             Assert.AreEqual(new TimeSpan(11000), l.MetaData.Offset, "Wrong Offset");
             Assert.AreEqual(" 12estg:44", l.MetaData[MetaDataType.Length], "Wrong Length");
+
+            Assert.AreEqual("[a]", l.Lines[4].Content);
+            Assert.AreEqual(Timestamp.Create(0, 0), l.Lines[4].Timestamp);
         }
 
         [TestMethod]
@@ -107,7 +111,7 @@ SAF
         [TestMethod]
         public void Stringify10000Times()
         {
-            var l = Lyrics.Parse<Line>(TEST_DATA);
+            var l = Lyrics.Parse<Line>(TEST_DATA).Lyrics;
             for (var i = 0; i < 10000; i++)
             {
                 l.ToString();
