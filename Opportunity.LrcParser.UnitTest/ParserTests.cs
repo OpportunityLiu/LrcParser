@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections;
 using System.Linq;
 
 namespace Opportunity.LrcParser.UnitTest
@@ -7,6 +8,7 @@ namespace Opportunity.LrcParser.UnitTest
     [TestClass]
     public class ParserTests
     {
+
         public const string TEST_DATA = @"
 asdfhf
 [ ti :eternal reality]aSAS

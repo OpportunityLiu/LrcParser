@@ -48,10 +48,7 @@ namespace Opportunity.LrcParser
 
         internal StringBuilder ToString(StringBuilder sb)
         {
-            return sb.Append('[')
-                .Append(this.InternalTimestamp.ToLrcString())
-                .Append(']')
-                .Append(this.Content);
+            return TimestampToString(sb).Append(this.Content);
         }
 
         internal StringBuilder TimestampToString(StringBuilder sb)
@@ -63,11 +60,7 @@ namespace Opportunity.LrcParser
 
         /// <inheritdoc/>
         public override string ToString()
-        {
-            var sb = new StringBuilder(this.content.Length + 10);
-            ToString(sb);
-            return sb.ToString();
-        }
+           => ToString(new StringBuilder(this.content.Length + 10)).ToString();
 
         /// <inheritdoc/>
         public int CompareTo(Line other)
